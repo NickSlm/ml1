@@ -4,6 +4,7 @@ import urllib
 from urllib import request
 import pandas as pd
 from zlib import crc32
+import numpy as np
 
 DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml2/master/"
 HOUSING_PATH = os.path.join("datasets", "housing")
@@ -21,14 +22,13 @@ def load_housing_data(housing_path=HOUSING_PATH):
     csv_path = os.path.join(housing_path,"housing.csv")
     return pd.read_csv(csv_path)
 
-def split_train_test(data, ratio, id_column):
-    """
-    Args:
-        data (data frame): dataset
-        ratio (int): in what ratio we want to split the dataset into train and test
-        id_column (string): column we going to use as identifier
-    """
-    data_ids = data[id_column]
-        
+def check_if_test(id, ratio):
+    return crc32(np.int64(id)) < ratio * 2 ** 32
+    
+def split_test_train_by_id(data, ratio, index):
+    data_ids = data[index]
+    test_set = data_ids.apply(lambda id: check_if_test(id, ratio))
+    return data.loc[~test_set], data.loc[test_set]
+
     
     
