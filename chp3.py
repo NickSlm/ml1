@@ -1,9 +1,11 @@
 import numpy as np
+import math
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from sklearn.datasets import fetch_openml
 from sklearn.linear_model import SGDClassifier
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import StratifiedKFold, cross_val_predict,cross_val_score
 from sklearn.base import clone
 from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score, precision_recall_curve, roc_curve,roc_auc_score
@@ -12,13 +14,35 @@ from sklearn.svm import SVC
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.preprocessing import StandardScaler
 
+def plot_digits(instances, images_per_row=10, **options):
+    size = 28
+    images_per_row = min(images_per_row, len(instances))
+    
+    images = [instance.reshape(size,size) for instance in instances]
+    
+    
+    n_rows = math.ceil(len(instances) / images_per_row)
+    
+    row_images = []
+    
+    n_empty = n_rows * images_per_row - len(instances)
+    images.append(np.zeros((size, size * n_empty)))
+    
+    for row in range(n_rows):
+        rimages = images[row * images_per_row: images_per_row * (row + 1)]
+        row_images.append(np.concatenate(rimages,axis=1))
+    
+    image = np.concatenate(row_images, axis=0)
+    # And finally we can just `imshow()` this big image, forwarding any options we were given:
+    plt.imshow(image, cmap = mpl.cm.binary, **options)
+    # And drop the horizontal and vertical axes (and their labels):
+    plt.axis("off")
 
 mnist = fetch_openml("mnist_784", version=1, as_frame=False, data_home="D:\ml1\datasets")
 
 x, y = mnist["data"], mnist["target"]
 y = y.astype(np.uint8)
 x_train, x_test, y_train, y_test = x[:60000], x[60000:],y[:60000], y[60000:]
-
 y_train_5 = (y_train == 5)
 y_test_5 = (y_test == 5)
 
@@ -98,23 +122,38 @@ some_digit.reshape(28,28)
 
 
 
-sdg_clf = SGDClassifier()
-sdg_clf.fit(x_train, y_train)
+# sdg_clf = SGDClassifier()
+# sdg_clf.fit(x_train, y_train)
 
-scaler = StandardScaler()
-x_train_scaled = scaler.fit_transform(x_train.astype(np.float64))
-y_train_pred = cross_val_predict(sdg_clf, x_train_scaled, y_train, cv=3)
-conf_mtx = confusion_matrix(y_train, y_train_pred)
+# scaler = StandardScaler()
+# x_train_scaled = scaler.fit_transform(x_train.astype(np.float64))
+# y_train_pred = cross_val_predict(sdg_clf, x_train_scaled, y_train, cv=3)
+# conf_mtx = confusion_matrix(y_train, y_train_pred)
 
-row_sum = conf_mtx.sum(axis=1, keepdims=True)
-norm_conf_mtx = conf_mtx / row_sum
-np.fill_diagonal(norm_conf_mtx, 0)
-plt.matshow(norm_conf_mtx, cmap=plt.cm.gray)
-plt.show()
+# row_sum = conf_mtx.sum(axis=1, keepdims=True)
+# norm_conf_mtx = conf_mtx / row_sum
+# np.fill_diagonal(norm_conf_mtx, 0)
+# plt.matshow(norm_conf_mtx, cmap=plt.cm.gray)
+# plt.show()
+
+# cl_a, cl_b = 3, 5
+# x_aa = x_train[(y_train == cl_a) & (y_train_pred == cl_a)]
+# x_ab = x_train[(y_train == cl_a) & (y_train_pred == cl_b)]
+# x_ba = x_train[(y_train == cl_b) & (y_train_pred == cl_a)]
+# x_bb = x_train[(y_train == cl_b) & (y_train_pred == cl_b)]
+# plt.subplot(221); plot_digits(x_aa[:25], 5)
+# plt.subplot(222); plot_digits(x_ab[:25], 5)
+# plt.subplot(223); plot_digits(x_ba[:25], 5)
+# plt.subplot(224); plot_digits(x_bb[:25], 5)
+# plt.show()
 
 
 
+# Multilabel Classification
+# y_train_large = (y_train >= 7)
+# y_train_odd = (y_train % 2 == 1)
+# y_multilabel = np.c_[y_train_large, y_train_odd]
 
-
-
-
+# kneighb_clf = KNeighborsClassifier()
+# kneighb_clf.fit(x_train, y_multilabel)
+# kneighb_clf.predict([some_digit])
