@@ -3,16 +3,18 @@ import math
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+from scipy.ndimage import shift
 from sklearn.datasets import fetch_openml
 from sklearn.linear_model import SGDClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import StratifiedKFold, cross_val_predict,cross_val_score
+from sklearn.model_selection import StratifiedKFold, cross_val_predict,cross_val_score,GridSearchCV
 from sklearn.base import clone
-from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score, precision_recall_curve, roc_curve,roc_auc_score
+from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score, precision_recall_curve, roc_curve,roc_auc_score,accuracy_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.preprocessing import StandardScaler
+
 
 def plot_digits(instances, images_per_row=10, **options):
     size = 28
@@ -153,7 +155,40 @@ some_digit.reshape(28,28)
 # y_train_large = (y_train >= 7)
 # y_train_odd = (y_train % 2 == 1)
 # y_multilabel = np.c_[y_train_large, y_train_odd]
-
 # kneighb_clf = KNeighborsClassifier()
 # kneighb_clf.fit(x_train, y_multilabel)
 # kneighb_clf.predict([some_digit])
+
+# Multioutput Classification
+
+# 1
+kneighb_clf = KNeighborsClassifier()
+kneighb_clf.fit(x_train, y_train)
+param_grid = {"weights":["uniform","distance"],"n_neighbors":[3,4,5]}
+grid_search = GridSearchCV(kneighb_clf, param_grid,cv=3, verbose=3)
+grid_search.fit(x_train, y_train)
+
+
+# 2
+def shift_image(image,dx, dy):
+    image = image.reshape((28,28))
+    shifted_image = shift(image,[dy, dx],mode="constant", cval=0)
+    return shifted_image.reshape([-1])
+
+
+x_train_augmented = [image for image in x_train]
+y_train_augmented = [label for label in y_train]
+
+for dx, dy in [(1,0),(-1,0),(0,1),(0,-1)]:
+    for image, label in zip(x_train, y_train):        
+        x_train_augmented.append(shift_image(image, dx, dy))
+        y_train_augmented.append(label)
+    
+x_train_augmented = np.array(x_train_augmented)
+y_train_augmented = np.array(y_train_augmented)
+    
+kneigh_clf = KNeighborsClassifier(**grid_search.best_params_)
+kneigh_clf.fit(x_train_augmented, y_train_augmented)
+y_test_pred = kneigh_clf.predict(x_test)
+
+
