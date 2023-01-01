@@ -190,5 +190,5 @@ y_train_augmented = np.array(y_train_augmented)
 kneigh_clf = KNeighborsClassifier(**grid_search.best_params_)
 kneigh_clf.fit(x_train_augmented, y_train_augmented)
 y_test_pred = kneigh_clf.predict(x_test)
-
+print(accuracy_score(y_test, y_test_pred))
 

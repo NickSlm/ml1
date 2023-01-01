@@ -2,6 +2,7 @@ import os
 import tarfile
 import urllib
 import joblib
+import math
 from urllib import request
 from sklearn.base import BaseEstimator, TransformerMixin
 import pandas as pd
@@ -78,3 +79,4 @@ class TopFeatures(BaseEstimator, TransformerMixin):
     
     def transform(self, X):
         return X[:,self.feature_importances_]
+
