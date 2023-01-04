@@ -6,11 +6,14 @@ import urllib.request
 import email
 import email.policy
 from html import unescape
+from scipy.sparse import csr_matrix
 from collections import Counter
 from bs4 import BeautifulSoup
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.pipeline import Pipeline
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import recall_score, precision_score
 
 try:
     import nltk
@@ -145,15 +148,49 @@ class EmailToWordCounterTransformer(BaseEstimator, TransformerMixin):
         return np.array(x_transformed)
                     
 class WordCounterToVectorTransformer(BaseEstimator, TransformerMixin):
-    def __init__(self):
-        pass
-
+    def __init__(self, vocabulary_size=1000):
+        self.vocabulary_size = vocabulary_size
+        
     def fit(self, x, y=None):
+        total_count = Counter()
+        for word_count in x:
+            for word, count in word_count.items():
+                total_count[word] += min(count, 10)
+        most_common = total_count.most_common()[:self.vocabulary_size]
+        self.vocabulary_ = {word: index + 1 for index, (word, count) in enumerate(most_common)}
         return self
-    
-    def transform(self, x, y= None):
-        pass
-                
-X_few = x_train[:3]
-X_few_wordcounts = EmailToWordCounterTransformer().fit_transform(X_few)
-print(X_few_wordcounts)
+    def transform(self, x, y=None):
+        rows = []
+        cols = []
+        data = []
+        for row, word_count in enumerate(x):
+            for word, count in word_count.items():
+                rows.append(row)
+                cols.append(self.vocabulary_.get(word, 0))
+                data.append(count)
+        return csr_matrix((data, (rows, cols)), shape=(len(x), self.vocabulary_size + 1))
+                                
+
+preprocess_pipeline = Pipeline([("email_to_word_count", EmailToWordCounterTransformer()),
+                                ("word_count_to_vector", WordCounterToVectorTransformer())]
+                                )
+
+X_train_transformed = preprocess_pipeline.fit_transform(x_train)
+
+# log_reg = LogisticRegression(solver="lbfgs", max_iter=1000, random_state=42)
+# log_reg.fit(x_train_transformed, y_train)
+
+# log_clf = LogisticRegression(solver="lbfgs", max_iter=1000, random_state=42)
+# score = cross_val_score(log_clf, x_train_transformed, y_train, cv=3, verbose=3)
+# print(score.mean())
+
+
+X_test_transformed = preprocess_pipeline.transform(x_test)
+
+log_clf = LogisticRegression(solver="lbfgs", max_iter=1000, random_state=42)
+log_clf.fit(X_train_transformed, y_train)
+
+y_pred = log_clf.predict(X_test_transformed)
+
+print("Precision: {:.2f}%".format(100 * precision_score(y_test, y_pred)))
+print("Recall: {:.2f}%".format(100 * recall_score(y_test, y_pred)))
