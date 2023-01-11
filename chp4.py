@@ -20,12 +20,22 @@ x_b = np.c_[np.ones((100,1)),x]
 # theta_best = np.linalg.inv(x_b.T.dot(x_b)).dot(x_b.T).dot(y)
 # print(theta_best)
 
-# Linear Regression
+# Linear Regression SVD O(n^2)
 # lin_reg = LinearRegression()
 # lin_reg.fit(x, y)
 # print(lin_reg.intercept_, lin_reg.coef_)
 
 # linalg.lstsq
-theta_best_svd, residuals, rank, s = np.linalg.lstsq(x_b, y, rcond=1e-6)
-print(theta_best_svd)
+# theta_best_svd, residuals, rank, s = np.linalg.lstsq(x_b, y, rcond=1e-6)
+# print(theta_best_svd)
 
+# Gradient Descent
+learning_rate = 0.1
+n_iterations = 100
+m = 100
+
+theta = np.random.randn(2,1)
+
+for iteration  in range(n_iterations):
+    gradient = 2/m * x_b.T.dot(x_b.dot(theta) - y)
+    theta = theta - learning_rate * gradient
