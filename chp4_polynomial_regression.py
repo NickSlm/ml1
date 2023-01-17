@@ -3,14 +3,14 @@ import numpy.random as rnd
 import matplotlib
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import  PolynomialFeatures
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 
 x = 6 * rnd.rand(100, 1) - 3
 y = 0.5 * x**2 + x + 2 + rnd.randn(100, 1 )
 
-poly_features = PolynomialFeatures(degree=10, include_bias=False)
+poly_features = PolynomialFeatures(degree=2, include_bias=False)
 x_poly = poly_features.fit_transform(x)
 
 
@@ -27,8 +27,7 @@ def plot_learning_curve(model, x, y):
     plt.plot(np.sqrt(test_errors), "b-",  linewidth=3, label="val")
         
 
-lin_reg = LinearRegression()
-plot_learning_curve(lin_reg, x ,y)
-plt.axis([0, 80, 0, 3])
-
-plt.show()
+# lin_reg = LinearRegression()
+# plot_learning_curve(lin_reg, x ,y)
+# plt.axis([0, 80, 0, 3])
+# plt.show()
