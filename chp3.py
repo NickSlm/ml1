@@ -54,7 +54,10 @@ y_test_5 = (y_test == 5)
 some_digit = x_train[0]
 some_digit.reshape(28,28)
 
+# =========================================================================
 # custom cross_validation implementation
+# =========================================================================
+
 # kfolds = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
 # for train_index, test_index in kfolds.split(x_train, y_train_5):
 #     clone_clf = clone(sgd_clf)
@@ -105,7 +108,10 @@ some_digit.reshape(28,28)
 # plt.plot([threshold_90_precision], [recall_90_precision], "ro")                             # Not shown
 # plt.show()
 
+# =========================================================================
 # roc_curve Graph
+# =========================================================================
+
 # forest_clf = RandomForestClassifier(random_state=42)
 # y_probas_02 = cross_val_predict(forest_clf, x_train ,y_train_5, cv=3, method="predict_proba")
 # y_scores_02 = y_probas_02[:,1]
@@ -150,16 +156,20 @@ some_digit.reshape(28,28)
 # plt.show()
 
 
-
+# =========================================================================
 # Multilabel Classification
+# =========================================================================
+
 # y_train_large = (y_train >= 7)
 # y_train_odd = (y_train % 2 == 1)
 # y_multilabel = np.c_[y_train_large, y_train_odd]
 # kneighb_clf = KNeighborsClassifier()
 # kneighb_clf.fit(x_train, y_multilabel)
-# kneighb_clf.predict([some_digit])
+# kneighb_clf.predict([some_digit]
 
+# =========================================================================
 # Multioutput Classification
+# =========================================================================
 
 # 1
 kneighb_clf = KNeighborsClassifier()

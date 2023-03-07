@@ -1,4 +1,12 @@
 from utils import fetch_housing_data, load_housing_data, CombinedAttributeAdder, display_score, save_model_to_disk, load_model_from_disk, top_k_indices, TopFeatures
+
+import numpy as np
+import pandas as pd
+from pandas.plotting import scatter_matrix
+import matplotlib.pyplot as plt
+from zlib import crc32
+from scipy.stats import randint, reciprocal, expon
+
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import StratifiedShuffleSplit, cross_val_score, GridSearchCV,RandomizedSearchCV
@@ -9,19 +17,15 @@ from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
-import pandas as pd
-from pandas.plotting import scatter_matrix
-import matplotlib.pyplot as plt
-from zlib import crc32
-import numpy as np
-from scipy.stats import randint, reciprocal, expon
+
 
 def main():
-    # VARIABELS
     k = 5
-    # 
     
-    # fetch_housing_data()
+
+# =========================================================================
+# Fetch data
+# ========================================================================= 
     data_frame = load_housing_data()
     data_frame['income_cat'] = pd.cut(data_frame['median_income'],bins=[0., 1.5, 3.0, 4.5, 6, np.inf], labels=[1,2,3,4,5])
     split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=42)
@@ -37,20 +41,26 @@ def main():
 
     housing_num = housing.drop("ocean_proximity", axis=1)
  
-    # Text and Categorical attributes changes (Changing non interger attributes to integer)
+# =========================================================================
+# Text and Categorical attributes changes (Changing non interger attributes to integer)
+# =========================================================================
     housing_cat = housing[["ocean_proximity"]]
     cat_encoder = OneHotEncoder(sparse=False)
     housing_cat_1hot = cat_encoder.fit_transform(housing_cat)
     
     attr_adder = CombinedAttributeAdder(add_bedrooms_per_room=False)
-    # adding new attributes to our dataset = rooms_per_household, population_per_household
-    # the new dataset wont have any column names so we will have to add it
+    
+# =========================================================================
+# adding new attributes to our dataset = rooms_per_household, population_per_household
+# the new dataset wont have any column names so we will have to add it
+# =========================================================================
     housing_extra_attribs = attr_adder.transform(housing.values)
-    # adding column names into our new dataset with new attributes
     housing_extra_attribs = pd.DataFrame(housing_extra_attribs,
                                          columns=list(housing.columns) + ["rooms_per_household", "population_per_household"],
                                          index=housing.index)
-
+# =========================================================================
+# Building a pipeline to clean our data
+# =========================================================================
     num_pipeline = Pipeline([
         ("imputer", SimpleImputer(strategy="median")),
         ("attr_adder", CombinedAttributeAdder()),
@@ -64,9 +74,13 @@ def main():
             ("num", num_pipeline, num_attribs),
             ("cat", OneHotEncoder(), cat_attribs),
         ])
- 
+
+
     housing_prepared = full_pipeline.fit_transform(housing)
     
+# =========================================================================
+# Run gridsearch on random_forest to find the best hyperparameters,features
+# =========================================================================
     param_grid = [
     {'n_estimators': [3, 10, 30], 'max_features': [2, 4, 6, 8]},
     {'bootstrap': [False], 'n_estimators': [3, 10], 'max_features': [2, 3, 4]},

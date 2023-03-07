@@ -42,13 +42,18 @@ w2 = -svc.coef_[0,0]/svc.coef_[0,1]
 b2 = -svc.intercept_[0]/svc.coef_[0,1]
 w3 = -sgd_clf.coef_[0,0]/sgd_clf.coef_[0,1]
 b3 = -sgd_clf.intercept_[0]/sgd_clf.coef_[0,1]
-
+# =========================================================================
 # Transform the decision boundary lines back to the original scale
+# =========================================================================
 line1 = scaler.inverse_transform([[-10, -10 * w1 + b1], [10, 10 * w1 + b1]])
 line2 = scaler.inverse_transform([[-10, -10 * w2 + b2], [10, 10 * w2 + b2]])
 line3 = scaler.inverse_transform([[-10, -10 * w3 + b3], [10, 10 * w3 + b3]])
 
+print(line1)
+
+# =========================================================================
 # Plot all three decision boundaries
+# =========================================================================
 plt.figure(figsize=(11, 4))
 plt.plot(line1[:, 0], line1[:, 1], "k:", label="LinearSVC")
 plt.plot(line2[:, 0], line2[:, 1], "b--", linewidth=2, label="SVC")

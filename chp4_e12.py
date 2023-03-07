@@ -32,7 +32,6 @@ def one_hot_encoder(y):
 
 def soft_max(logits):
     exp = np.exp(logits)
-    print(exp)
     sum_exp = np.sum(exp, axis=1, keepdims=True)
     return exp / sum_exp
 
@@ -45,17 +44,32 @@ n_outputs = y.max() + 1
 
 
 n_iterations = 5001
-eta = 0.01
 m = len(x_train)
+eta = 0.01
+epsilon = 1e-7
+alpha = 0.1
 
-theta = np.random.randn(n_features, n_outputs)
 
+# gradient descent using softmax with l2 penalty
+theta = np.random.rand(n_features, n_outputs)
 for iteration in range(n_iterations):
     logits = np.dot(x_train, theta)
     y_proba = soft_max(logits)
+    if iteration % 500 == 0:
+        cross_entropy = -np.mean(np.sum(y_train_encode * np.log(y_proba + 1e-7), axis=1))
+        l2_loss = 1/2 * np.sum(np.square(theta[1:]))
+        loss = cross_entropy + alpha * l2_loss
+        print(iteration, loss)
     error = y_proba - y_train_encode
-    gradients = 1/m * x_train.T.dot(error)
+    gradients = 1/m * x_train.T.dot(error) + np.r_[np.zeros([1, n_outputs]), alpha * theta[1:]]
     theta = theta - eta * gradients
 
+# Checking the accuracy score of the validation set #                                     
+logits = x_val.dot(theta)
+y_proba = soft_max(logits)
+y_predict = np.argmax(y_proba, axis=1)
+
+accuracy_score = np.mean(y_predict == y_val)
+print(accuracy_score)
 
 

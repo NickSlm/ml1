@@ -19,7 +19,6 @@ tree_clf = DecisionTreeClassifier(random_state=42)
 param_grid = {"max_leaf_nodes":list(range(2, 100)), "min_samples_split":[2,3,4], "criterion":["gini", "entropy"]}
 
 grid_search = GridSearchCV(tree_clf, param_grid,verbose=3, cv=3)
-
 grid_search.fit(X_train, y_train)
 
 n_dtree = 1000

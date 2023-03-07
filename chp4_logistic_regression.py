@@ -21,9 +21,14 @@ iris = datasets.load_iris()
 # plt.ylabel("Probability")
 # plt.show()
 
+# =========================================================================
 # softmax
+# =========================================================================
+
 x = iris["data"][:,(2,3)]
 y = iris["target"]
 
 softmax_reg = LogisticRegression(C=10, solver="lbfgs", multi_class="multinomial")
 softmax_reg.fit(x, y)
+
+print(softmax_reg.predict_proba([[2,3]]))

@@ -4,7 +4,10 @@ import numpy as np
 from sklearn.datasets import load_iris
 from sklearn.tree import DecisionTreeClassifier, export_graphviz
 from graphviz import Source
+from scipy.stats import uniform, reciprocal
 
+
+print(reciprocal(1, 10))
 
 
 image_path = os.path.join(".", "images", "decision_tree")

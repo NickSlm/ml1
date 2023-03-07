@@ -10,9 +10,13 @@ from sklearn.metrics import mean_squared_error
 # x = 3 * np.random.rand(20, 1)
 # y = 0.5 * x + 1 + np.random.randn(20, 1) / 1.5
 
+# =========================================================================
 # Increasing the bias to lower the variance
-
+# =========================================================================
+# =========================================================================
 # Ridge Regression
+# =========================================================================
+
 # ridge_reg = Ridge(alpha=1, solver="cholesky")
 # ridge_reg.fit(x, y)
 # print("Ridge: {0}".format(ridge_reg.predict([[1.5]])))
@@ -22,7 +26,10 @@ from sklearn.metrics import mean_squared_error
 # y_pred = sgd_reg.predict([[1.5]])
 # print(f"SGD Ridge: {y_pred}")
 
+# =========================================================================
 # Lasso Regression
+# =========================================================================
+
 # lasso_reg = Lasso(alpha=0.1)
 # lasso_reg.fit(x, y)
 # print(f"Lasso:", lasso_reg.predict([[1.5]]))
@@ -31,13 +38,18 @@ from sklearn.metrics import mean_squared_error
 # sgd_reg_p1.fit(x,y.ravel())
 # print("SGD Lasso:", sgd_reg_p1.predict([[1.5]]))
 
+# =========================================================================
 # Elastic Net
+# =========================================================================
+
 # elastic_net = ElasticNet(alpha=0.1, l1_ratio=0.5)
 # elastic_net.fit(x,y)
 # print(f"Elastic net: {elastic_net.predict([[1.5]])}")
 
-
+# =========================================================================
 # Early Stopping
+# =========================================================================
+
 np.random.seed(42)
 X = 6 * np.random.rand(100, 1) - 3
 y = 2 + X + 0.5 * X**2 + np.random.randn(100, 1)
@@ -74,7 +86,7 @@ plt.annotate('Best model',
              fontsize=16,
             )
 
-best_val_rmse -= 0.03  # just to make the graph look better
+best_val_rmse -= 0.03
 plt.plot([0, 500], [best_val_rmse, best_val_rmse], "k:", linewidth=2)
 plt.plot(np.sqrt(val_errors), "b-", linewidth=3, label="Validation set")
 plt.plot(np.sqrt(train_errors), "r--", linewidth=2, label="Training set")

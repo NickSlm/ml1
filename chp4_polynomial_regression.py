@@ -15,19 +15,19 @@ x_poly = poly_features.fit_transform(x)
 
 
 def plot_learning_curve(model, x, y):
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
-    train_errors, test_errors = [], []
+    x_train, x_val, y_train, y_val = train_test_split(x, y, test_size=0.2)
+    train_errors, val_errors = [], []
     for m in range(1, len(x_train)):
         model.fit(x_train[:m], y_train[:m])
         y_predict = model.predict(x_train[:m])
-        y_test_predict = model.predict(x_test)
+        y_test_predict = model.predict(x_val)
         train_errors.append(mean_squared_error(y_train[:m],y_predict))
-        test_errors.append(mean_squared_error(y_test, y_test_predict))
+        val_errors.append(mean_squared_error(y_val, y_test_predict))
     plt.plot(np.sqrt(train_errors), "r-+", linewidth=2, label="train")
-    plt.plot(np.sqrt(test_errors), "b-",  linewidth=3, label="val")
+    plt.plot(np.sqrt(val_errors), "b-",  linewidth=3, label="val")
         
 
-# lin_reg = LinearRegression()
-# plot_learning_curve(lin_reg, x ,y)
-# plt.axis([0, 80, 0, 3])
-# plt.show()
+lin_reg = LinearRegression()
+plot_learning_curve(lin_reg, x ,y)
+plt.axis([0, 80, 0, 3])
+plt.show()

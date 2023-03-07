@@ -3,11 +3,12 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 
-
+# =========================================================================
 # linear equation
-x  = 2 * np.random.rand(100, 1)
-y =  4 + 3 * x + np.random.randn(100, 1)
+# =========================================================================
 
+x  = 2 * np.random.rand(5, 1)
+y =  4 + 3 * x + np.random.randn(5, 1)
 # plt.plot(x,y,"y.")
 # plt.xlabel("$x_1$",fontsize=18)
 # plt.ylabel("$y$",rotation=0,fontsize=18)
@@ -15,9 +16,11 @@ y =  4 + 3 * x + np.random.randn(100, 1)
 # plt.show()
 
 
-x_b = np.c_[np.ones((100,1)),x]
-print(x_b)
+x_b = np.c_[np.ones((5,1)),x]
+# =========================================================================
 # normal equation - linear regression => (xT*x)^-1*xT*y
+# =========================================================================
+
 # theta_best = np.linalg.inv(x_b.T.dot(x_b)).dot(x_b.T).dot(y)
 # print(theta_best)
 
@@ -30,14 +33,20 @@ print(x_b)
 # theta_best_svd, residuals, rank, s = np.linalg.lstsq(x_b, y, rcond=1e-6)
 # print(theta_best_svd)
 
+# =========================================================================
 # Batch Gradient Descent
-# learning_rate = 0.1
-# n_iterations = 1000
-# m = 100
+# =========================================================================
 
-# theta = np.random.randn(2,1)  
+learning_rate = 0.01
+n_iterations = 1000
+m = 100
 
-# for iteration  in range(n_iterations):
-#     gradient = 2/m * x_b.T.dot(x_b.dot(theta) - y)
-#     theta = theta - learning_rate * gradient
-# print(theta)    
+theta = np.random.randn(2,1)  
+
+print(x_b)
+print(theta)
+
+for iteration  in range(n_iterations):
+    gradient = 2/m * x_b.T.dot(x_b.dot(theta) - y)
+    theta = theta - learning_rate * gradient
+print(theta)    
