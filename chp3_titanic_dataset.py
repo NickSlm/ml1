@@ -42,8 +42,10 @@ df_test.drop(["SibSp","Parch"], axis=1)
 df_train = df_train.set_index("PassengerId")
 df_test = df_test.set_index("PassengerId")
 
+# =========================================================================
 # fill up missing values; drop not important attribs like cabin
 # scale the data if needed using stdScaler
+# =========================================================================
 
 num_pipeline = Pipeline([("imputer", SimpleImputer(strategy="median")),
                          ("scaler", StandardScaler())])
@@ -58,15 +60,19 @@ cat_attribs = ["Pclass", "Sex", "Embarked"]
 
 preprocessing_pipeline = ColumnTransformer([("num", num_pipeline, num_attribs),
                                    ("cat",cat_pipeline, cat_attribs)])
-
+# =========================================================================
 # train dataset
+# =========================================================================
 x_train = preprocessing_pipeline.fit_transform(df_train[num_attribs + cat_attribs])
 
-
+# =========================================================================
 # test dataset
+# =========================================================================
 x_test = preprocessing_pipeline.fit_transform(df_test[num_attribs + cat_attribs])
 
+# =========================================================================
 # train dataset labels
+# =========================================================================
 y_train = df_train["Survived"]
 
 
