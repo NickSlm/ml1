@@ -1,6 +1,6 @@
 
 import numpy as np
-
+from sklearn.decomposition import PCA
 
 # ===========================================================================
 # Building 3D dataset
@@ -18,14 +18,24 @@ X[:, 0] = np.cos(angles) + np.sin(angles)/2 + noise * np.random.randn(m) / 2
 X[:, 1] = np.sin(angles) + 0.7 + noise * np.random.randn(m) / 2
 X[:, 2] = X[:,0] * w1 + X[:,1] * w2 + noise * np.random.randn(m)
 
-
 # ===========================================================================
-# PCA
+# PCA 
+# Steps:
+# - Center the dataset
+# - Calculate covariance matrix using x_variance, y_variance and covariance values
+# - Calculate eigenvectors and eigenvalues using the covariance
+# - Get rid of the smallest  eigenvalues that you get, and keep whatever you need.
+# - Plot the eigenvector with eigenvalues on our dataset and project the data onto the new plane. 
 # ===========================================================================
 
-X_centered = X - X.mean(axis=0)
-U, s, Vt = np.linalg.svd(X_centered)
-c1, c2 = Vt.T[:, 0], Vt.T[:,1]
+# Manual
+# X_centered = X - X.mean(axis=0)
+# U, s, Vt = np.linalg.svd(X_centered)
 
+# W2 = Vt[:,:2]
+# X2D = X_centered.dot(W2)
+# print(X2D)
 
-
+# Using Scikit
+pca = PCA(n_components=2)
+X2D = pca.fit_transform(X)
