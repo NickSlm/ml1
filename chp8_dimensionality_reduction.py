@@ -89,3 +89,8 @@ X_reduced = inc_pca.transform(X_train)
 # Kernel PCA
 # ===========================================================================
 
+X, y = make_swiss_roll(n_samples=1000, noise=0.2, random_state=42)
+lin_pca = KernelPCA(n_components=2,kernel="linear")
+rbf_pca = KernelPCA(n_components=2,kernel="rbf")
+sig_pca = KernelPCA(n_components=2, kernel="sigmoid")
+
